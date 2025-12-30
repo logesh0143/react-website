@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Home from "./Pages/Home";
-import About from "./pages/About";
-import Products from "./pages/Products";
-import Contact from "./pages/Contact";
-import Cart from "./pages/Cart";
+import Navbar from "./components/Navbar.jsx";
+import Home from "./Pages/Home.jsx";
+import About from "./Pages/About.jsx";
+import Products from "./Pages/Products.jsx";
+import Contact from "./Pages/Contact.jsx";
+import Cart from "./Pages/Cart.jsx";
 
 function App() {
 
