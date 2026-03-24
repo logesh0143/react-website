@@ -1,54 +1,37 @@
-import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar.jsx";
-import Home from "./Pages/Home.jsx";
-import About from "./Pages/About.jsx";
-import Products from "./Pages/Products.jsx";
-import Contact from "./Pages/Contact.jsx";
-import Cart from "./Pages/Cart.jsx";
+
+import Navbar from "./Components/Navbar";
+
+import Home from "./Pages/Home";
+import About from "./Pages/About";
+import Contact from "./Pages/Contact";
+import Products from "./Pages/Products";
+import Addproducts from "./Pages/Addproducts";
+import Editproducts from "./Pages/Editproducts";
+import Cart from "./Pages/Cart";
 
 function App() {
-
-  const [cartItems, setCartItems] = useState([]);
-
-  const cartCount = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
-
   return (
     <>
-      <Navbar cartCount={cartCount} />
+      <Navbar />
 
       <Routes>
         <Route path="/" element={<Home />} />
+
         <Route path="/about" element={<About />} />
 
-        <Route
-          path="/products"
-          element={
-            <Products
-              cartItems={cartItems}
-              setCartItems={setCartItems}
-            />
-          }
-        />
-
-        <Route
-          path="/cart"
-          element={
-            <Cart
-              cartItems={cartItems}
-              setCartItems={setCartItems}
-            />
-          }
-        />
-
         <Route path="/contact" element={<Contact />} />
+
+        <Route path="/products" element={<Products />} />
+
+        <Route path="/product" element={<Addproducts />} />
+
+        <Route path="/edit/:id" element={<Editproducts />} />
+
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </>
   );
 }
 
 export default App;
-

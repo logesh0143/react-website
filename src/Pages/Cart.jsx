@@ -1,130 +1,66 @@
-function Cart({ cartItems, setCartItems }) {
+import { useSelector, useDispatch } from "react-redux";
+import { removeFromCart } from "../store/Cartparts.jsx";
 
-  const increaseQty = (index) => {
-    const updatedCart = [...cartItems];
-    updatedCart[index].quantity += 1;
-    setCartItems(updatedCart);
-  };
+function Cart() {
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.cartItems);
 
-  const decreaseQty = (index) => {
-    const updatedCart = [...cartItems];
-
-    if (updatedCart[index].quantity > 1) {
-      updatedCart[index].quantity -= 1;
-    } else {
-      updatedCart.splice(index, 1);
-    }
-
-    setCartItems(updatedCart);
-  };
-
-  const removeItem = (index) => {
-    const updatedCart = [...cartItems];
-    updatedCart.splice(index, 1);
-    setCartItems(updatedCart);
-  };
+  // Calculate Total Price
+  const totalPrice = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
   return (
-    <div
-      style={{
-        padding: "40px",
-        maxWidth: "1200px",
-        margin: "auto",
-      }}
-    >
-      <h1 style={{ color: "#1355d0", marginBottom: "30px" }}>
-        Shopping Cart
-      </h1>
+    <div className="container mt-4">
+      <h2>🛒 Cart Items</h2>
 
       {cartItems.length === 0 ? (
-        <h3 style={{ textAlign: "center" }}>🛒 Your cart is empty</h3>
+        <h4>Your cart is empty</h4>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: "25px",
-            justifyContent: "center",
-          }}
-        >
-          {cartItems.map((item, index) => (
+        <>
+          {cartItems.map((item) => (
             <div
-              key={index}
+              key={item.id}
               style={{
                 border: "1px solid #ddd",
-                borderRadius: "12px",
-                padding: "15px",
-                textAlign: "center",
-                boxShadow: "0 6px 15px rgba(0,0,0,0.08)",
-                backgroundColor: "#fff",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "8px",
               }}
             >
-              {/* Image */}
-              <img
-                src={item.image}
-                alt={item.name}
-                style={{
-                  objectFit: "cover",
-                  borderRadius: "10px",
-                  marginBottom: "10px",
-                }}
-              />
-
-              {/* Name */}
               <h4>{item.name}</h4>
-
-              {/* Price */}
-              <p style={{ fontWeight: "600", marginBottom: "10px" }}>
-                ₹{item.price} × {item.quantity} =
-                <span style={{ color: "#1355d0" }}>
-                  {" "}₹{item.price * item.quantity}
-                </span>
+              <p>Price: ₹ {item.price}</p>
+              <img src={item.image} alt={item.name} style={{ maxWidth: "100px", height: "auto" }} />
+              <p>Quantity: {item.quantity}</p>
+              <p>
+                Subtotal: ₹ {item.price * item.quantity}
               </p>
 
-              {/* Quantity */}
-              <div
-                style={{
-                  
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "12px",
-                  marginBottom: "12px",
-                }}
-              >
-                <button onClick={() => decreaseQty(index)}>-</button>
-
-                <span style={{ fontSize: "18px", fontWeight: "bold" }}>
-                  {item.quantity}
-                </span>
-
-                <button onClick={() => increaseQty(index)}>+</button>
-              </div>
-
-              {/* Remove */}
               <button
-                onClick={() => removeItem(index)}
                 style={{
-                  backgroundColor: "#ff4d4d",
+                  backgroundColor: "red",
                   color: "white",
+                  padding: "5px 10px",
                   border: "none",
-                  padding: "8px 16px",
-                  borderRadius: "6px",
+                  borderRadius: "5px",
                   cursor: "pointer",
                 }}
+                onClick={() =>
+                  dispatch(removeFromCart(item.id))
+                }
               >
                 Remove
               </button>
             </div>
           ))}
-        </div>
+
+          <hr />
+          <h3>Total: ₹ {totalPrice}</h3>
+        </>
       )}
     </div>
   );
 }
 
 export default Cart;
- 
-
-
-

@@ -1,103 +1,145 @@
-function Products({ cartItems, setCartItems }) {
-  const products = [
-    {
-      id: 1,
-      name: "Laptop",
-      price: 50000,
-      image: "https://tse4.mm.bing.net/th/id/OIP.ve6JNQq942nqUQ7ZU6Sj0AHaE8?pid=Api&P=0&h=180",
-    },
-    {
-      id: 2,
-      name: "Mobile",
-      price: 20000,
-      image: "https://tse4.mm.bing.net/th/id/OIP.c4ZAM5Y83NDorfzBsbmBFQHaFj?pid=Api&P=0&h=180",
-    },
-    {
-      id: 3,
-      name: "Headphone",
-      price: 2000,
-      image: "https://tse2.mm.bing.net/th/id/OIP.qMnKupYMJvmaLZEtlxuF6AHaHa?pid=Api&P=0&h=180",
-    },
-  ];
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../store/Cartparts";
+import { Link } from "react-router-dom";
+import productsData from "../data/productsData";
 
-  const addToCart = (product) => {
-    const existingItem = cartItems.find(
-      (item) => item.id === product.id
-    );
+function Products() {
 
-    if (existingItem) {
-      setCartItems(
-        cartItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
+  const dispatch = useDispatch();
+
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [price, setPrice] = useState("");
+
+  // Load products from LocalStorage
+  useEffect(() => {
+
+    const savedProducts = JSON.parse(localStorage.getItem("products"));
+
+    if (savedProducts && savedProducts.length > 0) {
+      setProducts(savedProducts);
     } else {
-      setCartItems([
-        ...cartItems,
-        { ...product, quantity: 1 },
-      ]);
+      setProducts(productsData);
     }
-  };
+
+  }, []);
+
+  // Save products to LocalStorage
+  useEffect(() => {
+    localStorage.setItem("products", JSON.stringify(products));
+  }, [products]);
+
+  // Search + Filter
+  const filteredProducts = products.filter((p) => {
+    return (
+      p.name.toLowerCase().includes(search.toLowerCase()) &&
+      (price === "" || p.price <= Number(price))
+    );
+  });
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h1 style={{ marginBottom: "20px", color: "#1355d0" }}>
-        Our Products
-      </h1>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-          gap: "25px",
-        }}
+    <div className="container mt-4">
+
+      <h2 className="mb-4 text-center">📱 Mobile Store</h2>
+
+      {/* Search Bar */}
+
+      <input
+        type="text"
+        placeholder="Search Mobile..."
+        className="form-control mb-3"
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      {/* Price Filter */}
+
+      <select
+        className="form-control mb-4"
+        onChange={(e) => setPrice(e.target.value)}
       >
-        {products.map((item) => (
-          <div
-            key={item.id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "10px",
-              padding: "15px",
-              textAlign: "center",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-              transition: "transform 0.2s",
-            }}
-          >
-            <img
-              src={item.image}
-              alt={item.name}
-              style={{             
-                objectFit: "cover",
-                borderRadius: "8px",
-                marginBottom: "10px",
-              }}
-            />
+        <option value="">Filter by Price</option>
+        <option value="20000">Below ₹20,000</option>
+        <option value="50000">Below ₹50,000</option>
+        <option value="80000">Below ₹80,000</option>
+      </select>
 
-            <h4>{item.name}</h4>
-            <p style={{ fontSize: "18px", fontWeight: "bold" }}>
-              ₹{item.price}
-            </p>
+      <div className="row">
 
-            <button
-              onClick={() => addToCart(item)}
-              style={{
-                backgroundColor: "#1355d0",
-                color: "white",
-                border: "none",
-                padding: "10px 18px",
-                borderRadius: "6px",
-                cursor: "pointer",
-              }}
-            >
-              Add to Cart
-            </button>
+        {filteredProducts.map((product) => (
+
+          <div className="col-md-4 mb-4" key={product.id}>
+
+            <div className="card shadow-sm h-100 border-0">
+
+              {/* Click Product → Product Details */}
+
+              <Link
+                to={`/product/${product.id}`}
+                style={{ textDecoration: "none", color: "black" }}
+              >
+
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="card-img-top p-3"
+                  style={{ height: "220px", objectFit: "contain" }}
+                />
+
+                <div className="card-body text-center">
+
+                  <h5 className="card-title">
+                    {product.name}
+                  </h5>
+
+                  <p className="text-success fw-bold">
+                    ₹{product.price}
+                  </p>
+
+                </div>
+
+              </Link>
+
+              <div className="card-footer bg-white border-0 text-center">
+
+                {/* Add To Cart */}
+
+                <button
+                  className="btn btn-primary me-2"
+                  onClick={() => dispatch(addToCart(product))}
+                >
+                  Add To Cart
+                </button>
+
+                {/* Buy Now */}
+
+                <Link to="/cart">
+                  <button className="btn btn-success">
+                    Buy Now
+                  </button>
+                </Link>
+
+              </div>
+
+            </div>
+
           </div>
+
         ))}
+
       </div>
+
+      {/* Empty Product Message */}
+
+      {filteredProducts.length === 0 && (
+        <h4 className="text-center mt-4">
+          No Products Found
+        </h4>
+      )}
+
     </div>
+
   );
 }
 
